@@ -1,4 +1,3 @@
-// TrailRecordActivity.java
 package edublt.com.avaliacao2;
 
 import android.Manifest;
@@ -76,8 +75,17 @@ public class TrailRecordActivity extends AppCompatActivity {
         boolean isSatellite = prefs.getBoolean("isSatellite", false);
         boolean isCourseUp = prefs.getBoolean("isCourseUp", false);
 
+        // Configure map type
         mMap.setMapType(isSatellite ? GoogleMap.MAP_TYPE_SATELLITE : GoogleMap.MAP_TYPE_NORMAL);
-        mMap.getUiSettings().setRotateGesturesEnabled(!isCourseUp);
+
+        // Configure navigation mode
+        if (isCourseUp) {
+            mMap.getUiSettings().setRotateGesturesEnabled(true);
+            mMap.getUiSettings().setCompassEnabled(true);
+        } else {
+            mMap.getUiSettings().setRotateGesturesEnabled(false);
+            mMap.getUiSettings().setCompassEnabled(false);
+        }
 
         if (checkLocationPermission()) {
             mMap.setMyLocationEnabled(true);
@@ -97,7 +105,6 @@ public class TrailRecordActivity extends AppCompatActivity {
 
     private void setupLocationUpdates() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
 
         LocationRequest locationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
@@ -127,6 +134,16 @@ public class TrailRecordActivity extends AppCompatActivity {
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 17));
             polylineOptions.add(currentLatLng);
             mMap.addPolyline(polylineOptions);
+
+            // Rotate the camera to match course if "Course Up" is enabled
+            if (prefs.getBoolean("isCourseUp", false) && location.hasBearing()) {
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(
+                        new com.google.android.gms.maps.model.CameraPosition.Builder()
+                                .target(currentLatLng)
+                                .zoom(17)
+                                .bearing(location.getBearing())
+                                .build()));
+            }
         }
 
         // Update distance and speed

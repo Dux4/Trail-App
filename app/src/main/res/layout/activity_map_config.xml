@@ -11,7 +11,7 @@
         android:text="Tipo de Mapa"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp" />
 
     <RadioGroup
         android:id="@+id/mapTypeGroup"
@@ -23,14 +23,13 @@
             android:id="@+id/normalType"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Vetorial"
-            android:checked="true"/>
+            android:text="Vetorial" />
 
         <RadioButton
             android:id="@+id/satelliteType"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Satélite"/>
+            android:text="Satélite" />
     </RadioGroup>
 
     <TextView
@@ -39,7 +38,7 @@
         android:text="Modo de Navegação"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp" />
 
     <RadioGroup
         android:id="@+id/navigationModeGroup"
@@ -50,13 +49,19 @@
             android:id="@+id/northUp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="North Up"
-            android:checked="true"/>
+            android:text="North Up" />
 
         <RadioButton
             android:id="@+id/courseUp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Course Up"/>
+            android:text="Course Up" />
     </RadioGroup>
+
+    <Button
+        android:id="@+id/saveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Salvar"
+        android:layout_marginTop="16dp" />
 </LinearLayout>

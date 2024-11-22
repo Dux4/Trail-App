@@ -2,7 +2,10 @@ package edublt.com.avaliacao2;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.widget.Button;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MapConfigActivity extends AppCompatActivity {
@@ -17,17 +20,22 @@ public class MapConfigActivity extends AppCompatActivity {
 
         RadioGroup mapTypeGroup = findViewById(R.id.mapTypeGroup);
         RadioGroup navigationModeGroup = findViewById(R.id.navigationModeGroup);
+        Button saveButton = findViewById(R.id.saveButton);
 
-        mapTypeGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putBoolean("isSatellite", checkedId == R.id.satelliteType);
-            editor.apply();
-        });
+        // Load saved preferences
+        boolean isSatellite = prefs.getBoolean("isSatellite", false);
+        boolean isCourseUp = prefs.getBoolean("isCourseUp", false);
 
-        navigationModeGroup.setOnCheckedChangeListener((group, checkedId) -> {
+        ((RadioButton) findViewById(isSatellite ? R.id.satelliteType : R.id.normalType)).setChecked(true);
+        ((RadioButton) findViewById(isCourseUp ? R.id.courseUp : R.id.northUp)).setChecked(true);
+
+        // Save preferences on button click
+        saveButton.setOnClickListener(v -> {
             SharedPreferences.Editor editor = prefs.edit();
-            editor.putBoolean("isCourseUp", checkedId == R.id.courseUp);
+            editor.putBoolean("isSatellite", mapTypeGroup.getCheckedRadioButtonId() == R.id.satelliteType);
+            editor.putBoolean("isCourseUp", navigationModeGroup.getCheckedRadioButtonId() == R.id.courseUp);
             editor.apply();
+            Toast.makeText(this, "Configurações salvas!", Toast.LENGTH_SHORT).show();
         });
     }
 }
