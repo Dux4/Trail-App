@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -54,7 +55,7 @@ public class TrailViewActivity extends AppCompatActivity {
                 null,
                 null,
                 null,
-                DatabaseHelper.COLUMN_TIMESTAMP + " DESC"
+                DatabaseHelper.COLUMN_TIMESTAMP + " ASC" // Ordem cronológica
         );
 
         if (cursor == null || !cursor.moveToFirst()) {
@@ -78,6 +79,7 @@ public class TrailViewActivity extends AppCompatActivity {
             points.add(point);
             boundsBuilder.include(point);
 
+            // Calcula a distância entre pontos consecutivos
             if (lastPoint != null) {
                 Location currentPoint = new Location("");
                 currentPoint.setLatitude(lat);
@@ -94,6 +96,7 @@ public class TrailViewActivity extends AppCompatActivity {
         } while (cursor.moveToNext());
         cursor.close();
 
+        // Verifica se há pontos suficientes para exibir no mapa
         if (!points.isEmpty()) {
             PolylineOptions polylineOptions = new PolylineOptions()
                     .addAll(points)
@@ -104,13 +107,24 @@ public class TrailViewActivity extends AppCompatActivity {
             mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), 100));
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
-        long duration = endTime - startTime;
-        float averageSpeed = (duration > 0) ? (totalDistance / 1000f) / (duration / 3600000f) : 0;
+        // Calcula a duração e a velocidade média
+        long durationMillis = endTime - startTime;
+        float durationHours = durationMillis / (3600f * 1000); // Converte para horas
+        float averageSpeed = (durationHours > 0) ? (totalDistance / 1000f) / durationHours : 0;
 
+        // Logs para depuração
+        Log.d("TrailViewActivity", "Duração em milissegundos: " + durationMillis);
+        Log.d("TrailViewActivity", "Duração em horas: " + durationHours);
+        Log.d("TrailViewActivity", "Distância total (km): " + (totalDistance / 1000f));
+        Log.d("TrailViewActivity", "Velocidade média (km/h): " + averageSpeed);
+
+        // Formata os dados e exibe
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
+        long durationSeconds = durationMillis / 1000;
         String info = String.format(Locale.getDefault(),
                 "Início: %s\nDuração: %02d:%02d:%02d\nDistância: %.2f km\nVelocidade Média: %.2f km/h",
-                sdf.format(startTime), duration / 3600000, (duration % 3600000) / 60000, (duration % 60000) / 1000,
+                sdf.format(startTime),
+                durationSeconds / 3600, (durationSeconds % 3600) / 60, (durationSeconds % 60),
                 totalDistance / 1000f, averageSpeed);
         infoText.setText(info);
     }
